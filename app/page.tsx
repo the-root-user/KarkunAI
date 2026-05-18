@@ -46,7 +46,7 @@ export default function Home() {
           <AvatarFallback className="bg-background text-primary font-bold text-xl">K</AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <h1 className="font-semibold text-lg leading-tight uppercase tracking-tight">Karkun AI</h1>
+          <h1 className="font-bold text-lg leading-tight uppercase tracking-wider font-outfit -mb-0.5">Karkun AI</h1>
           <p className="text-xs opacity-90">Worker Intelligence Engine</p>
         </div>
         <div className="flex flex-col items-end gap-1">
