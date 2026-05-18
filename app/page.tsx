@@ -252,7 +252,7 @@ function AgentLogCard({ log }: { log: AgentLog }) {
             exit={{ height: 0 }}
             className="overflow-hidden"
           >
-            <div className="px-3 pb-3 pt-1 border-t border-border bg-accent-foreground/20 text-accent-foreground/40 font-mono text-[9px] whitespace-pre-wrap rounded-b-lg">
+            <div className="px-3 pb-3 pt-1 border-t border-border bg-accent-foreground/10 text-accent-foreground/50 font-mono text-[9px] whitespace-pre-wrap rounded-b-lg">
               {log.details}
             </div>
           </motion.div>
@@ -297,8 +297,8 @@ function ProviderCard({ provider, onConfirm, isProcessing, autoBooking, isConfir
 
   return (
     <Card className={cn("w-full pb-0 border border-primary/60 shadow-md bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden text-left relative overflow-hidden transition-all duration-500", isConfirmed && "ring-2 ring-primary", (timeLeft === 0 && autoBooking && !cancelled) && "opacity-50 pointer-events-none")}>
-      <div className={cn("absolute inset-0 w-full h-full rounded-[inherit] bg-primary/5", isConfirmed && "bg-primary/25")} />
-      <CardContent className="p-4">
+      <div className={cn("absolute inset-0 z-0 w-full h-full rounded-[inherit] bg-primary/5", isConfirmed && "bg-primary/25")} />
+      <CardContent className="p-4 z-1">
         <div className="flex items-start gap-4">
           <Avatar className="w-14 h-14 border-2 border-primary/10 bg-accent/40">
             <AvatarImage src={provider?.image} />
