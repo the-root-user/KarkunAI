@@ -13,11 +13,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Ustad - AI Service Orchestrator',
-  description: 'AI Service Orchestrator for Pakistan Informal Economy',
+  title: 'KarkunAI - Worker Intelligence Engine',
+  description: 'An Agentic AI service orchestrator for Pakistan\'s informal economy workforce (Karkuns).',
 };
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body suppressHydrationWarning className="font-inter antialiased">{children}</body>

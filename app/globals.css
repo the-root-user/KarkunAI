@@ -3,69 +3,97 @@
 @theme {
   --font-outfit: var(--font-outfit);
   --font-inter: var(--font-inter);
-  
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  
-  /* Brand specific */
-  --color-brand: #00a884;
-  --color-brand-dark: #008f6f;
-  
-  /* Chat specific */
-  --color-chat-bg: var(--chat-bg);
-  --color-bubble-user: var(--bubble-user);
-  --color-bubble-agent: var(--bubble-agent);
 }
 
 @layer base {
   :root {
-    --background: #f5f5f4; /* stone-100 */
-    --foreground: #1c1917; /* stone-900 */
-    
-    --primary: #00a884;
-    --primary-foreground: #ffffff;
-    
-    --secondary: #f0f2f5;
-    --secondary-foreground: #1c1917;
-    
-    --muted: #e7e5e4; /* stone-200 */
-    --muted-foreground: #78716c; /* stone-500 */
-    
-    --accent: #d9fdd3;
-    --accent-foreground: #064e3b;
-    
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    
-    --border: #e7e5e4; /* stone-200 */
-    --input: #ffffff;
-    --ring: #00a884;
-    
-    --chat-bg: #efeae2;
-    --bubble-user: #d9fdd3;
-    --bubble-agent: #ffffff;
+    --background: hsl(180 25% 97%);
+    --foreground: hsl(186 45% 10%);
+
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(186 45% 10%);
+
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(186 45% 10%);
+
+    --primary: hsl(175 56% 46%);
+    --primary-foreground: hsl(180 100% 98%);
+
+    --secondary: hsl(180 18% 92%);
+    --secondary-foreground: hsl(186 35% 18%);
+
+    --muted: hsl(180 16% 94%);
+    --muted-foreground: hsl(185 12% 42%);
+
+    --accent: hsl(176 60% 88%);
+    --accent-foreground: hsl(186 45% 12%);
+
+    --destructive: hsl(0 72% 51%);
+    --destructive-foreground: hsl(0 0% 98%);
+
+    --border: hsl(180 14% 86%);
+    --input: hsl(180 14% 86%);
+    --ring: hsl(175 56% 46%);
+
+    --radius: 1.25rem;
   }
 
-  .markdown-body b, .markdown-body strong {
+  .dark {
+    --background: hsl(195 100% 6%);
+    --foreground: hsl(180 20% 92%);
+
+    --card: hsl(186 45% 9%);
+    --card-foreground: hsl(180 20% 92%);
+
+    --popover: hsl(186 45% 9%);
+    --popover-foreground: hsl(180 20% 92%);
+
+    --primary: hsl(175 56% 50%);
+    --primary-foreground: hsl(180 100% 5%);
+
+    --secondary: hsl(186 32% 15%);
+    --secondary-foreground: hsl(180 20% 92%);
+
+    --muted: hsl(186 28% 14%);
+    --muted-foreground: hsl(180 8% 70%);
+
+    --accent: hsl(176 60% 46%);
+    --accent-foreground: hsl(180 100% 5%);
+
+    --destructive: hsl(0 72% 51%);
+    --destructive-foreground: hsl(0 0% 98%);
+
+    --border: hsl(184 25% 18%);
+    --input: hsl(184 25% 18%);
+    --ring: hsl(175 56% 50%);
+
+    --radius: 1.25rem;
+  }
+
+  .markdown-body b,
+  .markdown-body strong {
     @apply font-semibold;
   }
 }
