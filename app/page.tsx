@@ -106,7 +106,7 @@ export default function Home() {
                     variant="ghost"
                     size="icon"
                     aria-label="Delete chat"
-                    className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive shrink-0 transition-opacity"
+                    className="h-8 w-8 rounded-full sm:opacity-0 group-hover:opacity-100 bg-destructive/10 text-destructive/80 hover:bg-destructive/10 hover:text-destructive shrink-0 transition-opacity"
                     onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
                   >
                     <Trash2 className="w-4 h-4" />

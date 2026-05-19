@@ -34,7 +34,7 @@ const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 
 export function useOrchestrator() {
   // Helper to generate IDs
-  const createId = () => Math.random().toString(36).substring(14);
+  const createId = () => Math.random().toString(36).substring(2, 9);
 
   const [messages, setMessages] = useState<AppMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);

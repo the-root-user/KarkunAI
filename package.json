@@ -12,7 +12,7 @@
     "cap:sync": "npx cap sync",
     "cap:add-android": "npx cap add android",
     "cap:add-ios": "npx cap add ios",
-    "mobile:build": "npm run static && npx capacitor-assets generate && npx cap sync"
+    "mobile:build": "npm run static && npx cap sync"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
