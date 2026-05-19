@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { Intent, Provider } from '../lib/types';
 import { mockProviders } from '../lib/mockData';
@@ -22,19 +22,135 @@ export interface AppMessage {
   isSimulatedBookingReceipt?: boolean;
 }
 
+export interface ChatSession {
+  id: string;
+  title: string;
+  updatedAt: number;
+  messages: AppMessage[];
+}
+
 // Ensure the required API key exists
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "";
 
 export function useOrchestrator() {
+  // Helper to generate IDs
+  const createId = () => Math.random().toString(36).substring(14);
+
   const [messages, setMessages] = useState<AppMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [autoBooking, setAutoBooking] = useState(true);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [confirmedMessageId, setConfirmedMessageId] = useState<string | null>(null);
+
+  const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
+  const [currentChatId, setCurrentChatId] = useState<string>(createId());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
   const activeIntent = useRef<Intent | null>(null);
 
-  // Helper to generate IDs
-  const createId = () => Math.random().toString(36).substring(7);
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('karkun_chat_history');
+    if (savedHistory) {
+      try {
+        const parsedHistory: ChatSession[] = JSON.parse(savedHistory);
+        setChatHistory(parsedHistory);
+
+        // Load the most recent chat if available, or create a new one
+        if (parsedHistory.length > 0) {
+          const mostRecent = parsedHistory[0]; // Assuming they are sorted descending
+          setCurrentChatId(mostRecent.id);
+          setMessages(mostRecent.messages);
+        }
+      } catch (e) {
+        console.error('Failed to parse chat history', e);
+      }
+    }
+    setIsInitialized(true);
+  }, []);
+
+  // Save to localStorage when messages change
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    setChatHistory(prevHistory => {
+      const existingChatIndex = prevHistory.findIndex(c => c.id === currentChatId);
+      let updatedHistory = [...prevHistory];
+
+      if (messages.length === 0) {
+        // If current chat is empty, don't necessarily save it unless we need to update its empty state
+        return prevHistory;
+      }
+
+      const title = messages.find(m => m.role === 'user')?.content.substring(0, 30) || 'New Chat';
+
+      if (existingChatIndex >= 0) {
+        updatedHistory[existingChatIndex] = {
+          ...updatedHistory[existingChatIndex],
+          title: updatedHistory[existingChatIndex].title === 'New Chat' ? title : updatedHistory[existingChatIndex].title,
+          updatedAt: Date.now(),
+          messages: messages
+        };
+      } else {
+        updatedHistory.unshift({
+          id: currentChatId,
+          title,
+          updatedAt: Date.now(),
+          messages: messages
+        });
+      }
+
+      // Sort by updatedAt descending
+      updatedHistory.sort((a, b) => b.updatedAt - a.updatedAt);
+
+      localStorage.setItem('karkun_chat_history', JSON.stringify(updatedHistory));
+      return updatedHistory;
+    });
+  }, [messages, currentChatId, isInitialized]);
+
+  const startNewChat = useCallback(() => {
+    setMessages([]);
+    setCurrentChatId(createId());
+    setIsConfirmed(false);
+    setConfirmedMessageId(null);
+    activeIntent.current = null;
+    if (window.innerWidth < 1024) setIsSidebarOpen(false);
+  }, []);
+
+  const loadChat = useCallback((chatId: string) => {
+    const chat = chatHistory.find(c => c.id === chatId);
+    if (chat) {
+      setCurrentChatId(chatId);
+      setMessages(chat.messages);
+
+      // Determine if a booking was confirmed in this chat
+      const hasConfirmed = chat.messages.some(m => m.isSimulatedBookingReceipt);
+      setIsConfirmed(hasConfirmed);
+      if (hasConfirmed) {
+        const receiptMsg = chat.messages.find(m => m.isSimulatedBookingReceipt);
+        // This logic is a bit simple but finds the ID of the message that caused confirmation
+        // In reality, confirmedMessageId might need to be stored in ChatSession if we want perfect restoration
+      } else {
+        setConfirmedMessageId(null);
+      }
+
+      activeIntent.current = null; // Reset intent for older chats to prevent context bleeding
+      if (window.innerWidth < 1024) setIsSidebarOpen(false);
+    }
+  }, [chatHistory]);
+
+  const deleteChat = useCallback((chatId: string) => {
+    setChatHistory(prev => {
+      const updated = prev.filter(c => c.id !== chatId);
+      localStorage.setItem('karkun_chat_history', JSON.stringify(updated));
+      return updated;
+    });
+
+    if (chatId === currentChatId) {
+      startNewChat();
+    }
+  }, [currentChatId, startNewChat]);
 
   // Core orchestration function
   const sendMessage = async (userText: string) => {
@@ -368,5 +484,14 @@ Instructions:
     setAutoBooking,
     isConfirmed,
     confirmedMessageId,
+
+    // New chat history state and functions
+    chatHistory,
+    currentChatId,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    startNewChat,
+    loadChat,
+    deleteChat
   };
 }

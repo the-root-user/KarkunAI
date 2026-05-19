@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Send, MapPin, Star, Clock, Briefcase, Activity, CheckCircle2, ChevronDown, ChevronRight, Loader2, Wrench, Zap, Info, X } from 'lucide-react';
+import { Send, MapPin, Star, Clock, Briefcase, Activity, CheckCircle2, ChevronDown, ChevronRight, Loader2, Wrench, Zap, Info, X, Menu, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MockMap } from '@/components/mock-map';
 import Markdown from 'react-markdown';
@@ -17,7 +17,10 @@ import { cn } from "@/lib/utils"
 import { Textarea } from '@/components/ui/textarea';
 
 export default function Home() {
-  const { messages, sendMessage, confirmBooking, isProcessing, autoBooking, setAutoBooking, isConfirmed, confirmedMessageId } = useOrchestrator();
+  const { 
+    messages, sendMessage, confirmBooking, isProcessing, autoBooking, setAutoBooking, isConfirmed, confirmedMessageId,
+    chatHistory, currentChatId, isSidebarOpen, setIsSidebarOpen, startNewChat, loadChat, deleteChat
+  } = useOrchestrator();
   const [inputText, setInputText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -39,9 +42,91 @@ export default function Home() {
   return (
     <div className="flex flex-col h-[100dvh] bg-background max-w-2xl mx-auto w-full shadow-2xl relative overflow-hidden font-sans">
 
+      {/* Sidebar Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/60 z-40 backdrop-blur-[2px]"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar Drawer */}
+      <div 
+        className={cn(
+          "absolute inset-y-0 left-0 z-50 w-[80%] max-w-[300px] bg-secondary/95 backdrop-blur-md shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col border-r border-border",
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="p-4 border-b border-border/50 shrink-0 flex items-center justify-between">
+          <h2 className="font-bold text-foreground tracking-tight text-lg">Chats</h2>
+          <Button variant="ghost" size="icon" aria-label="Close sidebar" className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-black/5" onClick={() => setIsSidebarOpen(false)}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        
+        <div className="p-4 shrink-0">
+          <Button 
+            onClick={() => { startNewChat(); }} 
+            className="w-full bg-primary text-primary-foreground rounded-xl shadow-md h-12 flex items-center gap-2 justify-center font-bold hover:bg-primary/90 active:scale-95 transition-all"
+          >
+            <Plus className="w-5 h-5" /> New Chat
+          </Button>
+        </div>
+
+        <ScrollArea className="flex-1 px-3 py-2 mb-2">
+          <div className="space-y-1.5">
+            {chatHistory.length === 0 ? (
+              <div className="text-center p-4 text-xs text-muted-foreground/60 italic">No previous chats</div>
+            ) : (
+              chatHistory.map(chat => (
+                <div 
+                  key={chat.id} 
+                  className={cn(
+                    "flex items-center gap-2 p-3 rounded-xl cursor-pointer group transition-all",
+                    currentChatId === chat.id 
+                      ? "bg-primary/10 text-primary font-medium border border-primary/20" 
+                      : "hover:bg-accent/80 text-foreground/80 border border-transparent"
+                  )}
+                  onClick={() => loadChat(chat.id)}
+                >
+                  <MessageSquare className={cn("w-4 h-4 shrink-0 opacity-70", currentChatId === chat.id ? "text-primary" : "")} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm truncate">{chat.title || 'New Chat'}</p>
+                    <p className="text-[10px] opacity-60 truncate mt-0.5">
+                      {new Date(chat.updatedAt).toLocaleDateString()} &middot; {new Date(chat.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Delete chat"
+                    className="h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive shrink-0 transition-opacity"
+                    onClick={(e) => { e.stopPropagation(); deleteChat(chat.id); }}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+
       {/* Header */}
       <header className="bg-primary text-white p-4 flex items-center shadow-md z-10 sticky top-0 shrink-0">
-        <Avatar className="h-11 w-11 mr-3 after:border-0 border-2 border-white/30">
+        <button 
+          onClick={() => setIsSidebarOpen(true)}
+          aria-label="Open sidebar"
+          className="mr-3 p-1.5 -ml-1.5 rounded-full hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+        <Avatar className="h-11 w-11 mr-3 after:border-0 border-2 border-white/30 hidden sm:block">
           <AvatarImage src="/logo.png" />
           <AvatarFallback className="bg-background text-primary font-bold text-xl">K</AvatarFallback>
         </Avatar>
@@ -56,6 +141,7 @@ export default function Home() {
             </span>
             <button
               onClick={() => setAutoBooking(!autoBooking)}
+              aria-label={autoBooking ? "Disable auto-booking" : "Enable auto-booking"}
               className={`w-7 h-4 rounded-full relative cursor-pointer transition-colors ${autoBooking ? 'bg-white' : 'bg-muted/70'}`}
             >
               <div className={`absolute top-0.5 w-3 h-3 rounded-full transition-all ${autoBooking ? 'right-0.75 bg-primary' : 'left-0.75 bg-black/25'}`} />
@@ -200,6 +286,7 @@ export default function Home() {
           />
           <Button
             type="submit"
+            aria-label="Send message"
             disabled={!inputText.trim() || isProcessing}
             className="rounded-full w-12 h-12 bg-primary hover:bg-primary/80 shadow-sm flex items-center justify-center shrink-0 p-0"
           >
