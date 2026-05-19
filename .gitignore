@@ -8,3 +8,4 @@ coverage/
 pnpm-lock.yaml
 out/
 .idea/
+*Zone.Identifier
