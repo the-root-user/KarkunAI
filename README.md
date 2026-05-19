@@ -1,7 +1,10 @@
 <div align="center">
-  <h1>Karkun AI</h1>
-  <p><strong>Google AI Seekho | Antigravity Hackathon 2026</strong></p>
-  <p><em>Solution for Challenge 2: AI Service Orchestrator for Informal Economy</em></p>
+   <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+      <img src="./public/logo.png" alt="Logo" height="48px" width="48px" style="border-radius: 50%;">
+      <h1 style="font-size: 32px; font-weight: bold;">Karkun AI</h1>
+   </div>
+   <p><strong>Google AI Seekho | Antigravity Hackathon 2026</strong></p>
+   <p><em>Solution for Challenge 2: AI Service Orchestrator for Informal Economy</em></p>
 </div>
 
 ---
