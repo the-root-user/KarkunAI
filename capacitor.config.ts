@@ -1,12 +1,9 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.ustad.orchestrator',
-  appName: 'Ustad',
-  webDir: 'out',
-  server: {
-    androidScheme: 'https'
-  }
+  appId: 'com.rootuser.karkunai',
+  appName: 'Karkun AI',
+  webDir: 'out'
 };
 
 export default config;
