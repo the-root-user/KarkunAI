@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 import { Textarea } from '@/components/ui/textarea';
 
 export default function Home() {
-  const { 
+  const {
     messages, sendMessage, confirmBooking, isProcessing, autoBooking, setAutoBooking, isConfirmed, confirmedMessageId,
     chatHistory, currentChatId, isSidebarOpen, setIsSidebarOpen, startNewChat, loadChat, deleteChat
   } = useOrchestrator();
@@ -46,6 +46,7 @@ export default function Home() {
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div
+            key={isSidebarOpen ? "shown" : "hidden"}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -56,7 +57,7 @@ export default function Home() {
       </AnimatePresence>
 
       {/* Sidebar Drawer */}
-      <div 
+      <div
         className={cn(
           "absolute inset-y-0 left-0 z-50 w-[80%] max-w-[300px] bg-secondary/95 backdrop-blur-md shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col border-r border-border",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -68,10 +69,10 @@ export default function Home() {
             <X className="w-5 h-5" />
           </Button>
         </div>
-        
+
         <div className="p-4 shrink-0">
-          <Button 
-            onClick={() => { startNewChat(); }} 
+          <Button
+            onClick={() => { startNewChat(); }}
             className="w-full bg-primary text-primary-foreground rounded-xl shadow-md h-12 flex items-center gap-2 justify-center font-bold hover:bg-primary/90 active:scale-95 transition-all"
           >
             <Plus className="w-5 h-5" /> New Chat
@@ -84,12 +85,12 @@ export default function Home() {
               <div className="text-center p-4 text-xs text-muted-foreground/60 italic">No previous chats</div>
             ) : (
               chatHistory.map(chat => (
-                <div 
-                  key={chat.id} 
+                <div
+                  key={chat.id}
                   className={cn(
                     "flex items-center gap-2 p-3 rounded-xl cursor-pointer group transition-all",
-                    currentChatId === chat.id 
-                      ? "bg-primary/10 text-primary font-medium border border-primary/20" 
+                    currentChatId === chat.id
+                      ? "bg-primary/10 text-primary font-medium border border-primary/20"
                       : "hover:bg-accent/80 text-foreground/80 border border-transparent"
                   )}
                   onClick={() => loadChat(chat.id)}
@@ -98,7 +99,7 @@ export default function Home() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm truncate">{chat.title || 'New Chat'}</p>
                     <p className="text-[10px] opacity-60 truncate mt-0.5">
-                      {new Date(chat.updatedAt).toLocaleDateString()} &middot; {new Date(chat.updatedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      {new Date(chat.updatedAt).toLocaleDateString()} &middot; {new Date(chat.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   <Button
@@ -119,7 +120,7 @@ export default function Home() {
 
       {/* Header */}
       <header className="bg-primary text-white p-4 flex items-center shadow-md z-10 sticky top-0 shrink-0">
-        <button 
+        <button
           onClick={() => setIsSidebarOpen(true)}
           aria-label="Open sidebar"
           className="mr-3 p-1.5 -ml-1.5 rounded-full hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
@@ -334,6 +335,7 @@ function AgentLogCard({ log }: { log: AgentLog }) {
       <AnimatePresence>
         {expanded && log.details && (
           <motion.div
+            key={log.id}
             initial={{ height: 0 }}
             animate={{ height: 'auto' }}
             exit={{ height: 0 }}
